@@ -121,6 +121,8 @@
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="project.json" />
+    <PRIResource Include="Strings\zh-hant\Toplist.resjson" />
+    <PRIResource Include="Strings\zh-hans\Toplist.resjson" />
     <PRIResource Include="Strings\zh-hant\Resources.resjson" />
     <PRIResource Include="Strings\zh-hant\Namespace.resjson" />
     <PRIResource Include="Strings\zh-hant\Language.resjson" />
@@ -142,6 +144,7 @@
     <Compile Include="Galleries\Rating\Score.cs" />
     <Compile Include="Hentaiverse\HentaiVerseInfo.cs" />
     <Compile Include="Hentaiverse\MonsterEncounteredEventArgs.cs" />
+    <Compile Include="Launch\SearchHandlerBase.cs" />
     <Compile Include="Migrations\20170612052132_NewMig.cs" />
     <Compile Include="Migrations\20170612052132_NewMig.designer.cs">
       <DependentUpon>20170612052132_NewMig.cs</DependentUpon>
@@ -204,7 +207,6 @@
     <Compile Include="Category.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="Helpers\ConnectionHelper.cs" />
-    <Compile Include="Helpers\DictionaryExtention.cs" />
     <Compile Include="Galleries\GalleryImage.cs" />
     <Compile Include="Galleries\SaveGalleryProgress.cs" />
     <Compile Include="Settings\ExcludedLanguagesSettingProvider.cs" />
@@ -238,6 +240,7 @@
     <PRIResource Include="Strings\en\Category.resjson" />
     <PRIResource Include="Strings\en\Resources.resjson" />
     <PRIResource Include="Strings\en\Language.resjson" />
+    <PRIResource Include="Strings\en\Toplist.resjson" />
     <None Include="Strings\LocalizedStrings.resgenconfig" />
   </ItemGroup>
   <ItemGroup>

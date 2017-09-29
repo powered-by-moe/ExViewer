@@ -11,7 +11,9 @@ namespace ExViewer
         private static string[] prefixes = new string[]
         {
             "无法找到与此错误代码关联的文本。",
-            "The text associated with this error code could not be found."
+            "找不到與此錯誤碼關聯的文字。",
+            "The text associated with this error code could not be found.",
+            "No se pudo encontrar el texto asociado a este código de error."
         };
 
         public static string GetMessage(this Exception ex)

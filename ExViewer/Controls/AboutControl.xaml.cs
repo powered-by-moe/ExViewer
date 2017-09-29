@@ -3,8 +3,13 @@ using System;
 using System.Globalization;
 using System.Reflection;
 using Windows.ApplicationModel;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.Foundation;
+using System.Collections.Generic;
+using Windows.UI.Core;
+using System.Threading.Tasks;
 
 namespace ExViewer.Controls
 {
@@ -19,7 +24,7 @@ namespace ExViewer.Controls
             var config = GetType().GetTypeInfo().Assembly.GetCustomAttribute<AssemblyConfigurationAttribute>();
             if (!"release".Equals(config.Configuration, StringComparison.OrdinalIgnoreCase))
             {
-                FindName(nameof(tb_VersionInfoTag));
+                FindName(nameof(this.tb_VersionInfoTag));
                 this.tb_VersionInfoTag.Visibility = Visibility.Visible;
                 this.tb_VersionInfoTag.Text = config.Configuration;
             }
@@ -29,15 +34,55 @@ namespace ExViewer.Controls
             this.hlbHV.NavigateUri = ExClient.HentaiVerse.HentaiVerseInfo.LogOnUri;
         }
 
+        private async void init()
+        {
+            var source = await BannerProvider.Provider.GetBannersAsync();
+            if (source == null)
+                source = new[] { await StorageFile.GetFileFromApplicationUriAsync(BannerProvider.Provider.DefaultBanner) };
+            else if (source.Count > 2)
+                // 循环滚动
+                source.Add(source[0]);
+            this.fv_Banners.ItemsSource = source;
+        }
+
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            var margin = this.fv_Banners.Margin;
+            this.fv_Banners.Height = Math.Min((availableSize.Width - margin.Left - margin.Right) / 770 * 136, 136);
+            return base.MeasureOverride(availableSize);
+        }
+
         private void RefreshTimer_Tick(object sender, object e)
         {
             this.Bindings.Update();
+            this.fv_Banners_Counter++;
+            if (this.fv_Banners_Counter > 7)
+            {
+                var c = this.fv_Banners.SelectedIndex;
+                c++;
+                if (((IList<StorageFile>)this.fv_Banners.ItemsSource).Count <= c)
+                    c = 0;
+                this.fv_Banners.SelectedIndex = c;
+            }
         }
 
         private DispatcherTimer refreshTimer = new DispatcherTimer { Interval = new TimeSpan(10_000_000) };
 
+        private int fv_Banners_Counter = 0;
+
+        private async void fv_Banners_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.fv_Banners_Counter = 0;
+            if (((IList<StorageFile>)this.fv_Banners.ItemsSource).Count == this.fv_Banners.SelectedIndex + 1)
+            {
+                await Task.Delay(500);
+                this.fv_Banners.SelectedIndex = 0;
+            }
+        }
+
         private void UserControl_Loading(FrameworkElement sender, object args)
         {
+            init();
             this.refreshTimer.Start();
             this.Bindings.Update();
         }

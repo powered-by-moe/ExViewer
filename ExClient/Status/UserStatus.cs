@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 
 namespace ExClient.Status
@@ -20,16 +21,16 @@ namespace ExClient.Status
             return int.Parse(node.InnerText.DeEntitize());
         }
 
-        private void analyzeTopList(HtmlNode toplistsDiv)
+        private void analyzeToplists(HtmlNode toplistsDiv)
         {
             var table = toplistsDiv.Element("table").Descendants("table").FirstOrDefault();
             if (table == null)
             {
-                this.topLists.Clear();
+                this.toplists.Clear();
                 return;
             }
-            var newList = new List<TopListItem>();
-            var toremove = new List<int>(Enumerable.Range(0, this.topLists.Count));
+            var newList = new List<ToplistItem>();
+            var toremove = new List<int>(Enumerable.Range(0, this.toplists.Count));
             foreach (var toplistRecord in table.Elements("tr"))
             {
                 var rankNode = toplistRecord.Descendants("strong").FirstOrDefault();
@@ -41,9 +42,9 @@ namespace ExClient.Status
                 var link = new Uri(listNode.GetAttributeValue("href", "").DeEntitize());
                 if (!int.TryParse(link.Query.Split('=').Last(), out var listID))
                     continue;
-                newList.Add(new TopListItem(rank, (TopListName)listID));
+                newList.Add(new ToplistItem(rank, (ToplistName)listID));
             }
-            this.topLists.Update(newList);
+            this.toplists.Update(newList);
         }
 
         private void analyzeImageLimit(HtmlNode imageLimitDiv)
@@ -76,8 +77,9 @@ namespace ExClient.Status
 
         public IAsyncAction RefreshAsync()
         {
-            return AsyncInfo.Run(async token =>
+            return AsyncInfo.Run(async token => await Task.Run(async () =>
             {
+                this.toplists.Clear();
                 var doc = await Client.Current.HttpClient.GetDocumentAsync(infoUri);
                 var contentDivs = doc.DocumentNode
                     .Element("html").Element("body").Element("div").Elements("div")
@@ -86,15 +88,15 @@ namespace ExClient.Status
                 analyzeImageLimit(contentDivs[0]);
                 var ehTrackerDiv = contentDivs[1];
                 var totalGPGainedDiv = contentDivs[2];
-                analyzeTopList(contentDivs[3]);
+                analyzeToplists(contentDivs[3]);
                 analyzeModPower(contentDivs[4]);
-            });
+            }, token));
         }
 
         #region Image Limits
         private int imageUsage;
-        private int imageUsageLimit;
-        private int imageUsageRegenerateRatePerMinute;
+        private int imageUsageLimit = 5000;
+        private int imageUsageRegenerateRatePerMinute = 3;
         private int imageUsageResetCost;
         public int ImageUsage
         {
@@ -115,18 +117,19 @@ namespace ExClient.Status
 
         public IAsyncAction ResetImageUsageAsync()
         {
-            throw null;
+            // TODO:
+            throw new NotImplementedException();
         }
         #endregion
 
-        #region TopList
-        private ObservableList<TopListItem> topLists = new ObservableList<TopListItem>();
-        public ObservableListView<TopListItem> TopLists => this.topLists.AsReadOnly();
+        #region Toplist
+        private ObservableList<ToplistItem> toplists = new ObservableList<ToplistItem>();
+        public ObservableListView<ToplistItem> Toplists => this.toplists.AsReadOnly();
         #endregion
 
         #region Moderation Power
-        private double moderationPower;
-        private double moderationPowerBase;
+        private double moderationPower = 1;
+        private double moderationPowerBase = 1;
         private double moderationPowerAwards;
         private double moderationPowerTagging;
         private double moderationPowerLevel;

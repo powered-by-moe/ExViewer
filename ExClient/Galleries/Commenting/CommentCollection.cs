@@ -54,21 +54,12 @@ namespace ExClient.Galleries.Commenting
             });
         }
 
-        private class CommentEqualityComparer : IEqualityComparer<Comment>
-        {
-            public bool Equals(Comment x, Comment y) => x?.ID == y?.ID;
-
-            public int GetHashCode(Comment obj) => obj == null ? 0 : obj.ID.GetHashCode();
-
-            public static CommentEqualityComparer Current { get; } = new CommentEqualityComparer();
-        }
-
         internal void AnalyzeDocument(HtmlDocument doc)
         {
             lock (this.syncroot)
             {
                 var newValues = Comment.AnalyzeDocument(this, doc).ToList();
-                this.Update(newValues, CommentEqualityComparer.Current, (o, n) =>
+                this.Update(newValues, (x, y) => x.ID - y.ID, (o, n) =>
                 {
                     o.Score = n.Score;
                     o.Status = n.Status;
@@ -92,9 +83,11 @@ namespace ExClient.Galleries.Commenting
             content = content.Replace("\r\n", "\n").Replace('\r', '\n');
             if (string.IsNullOrEmpty(content))
                 throw new ArgumentException(LocalizedStrings.Resources.EmptyComment);
-            var length = encoding.GetByteCount(content);
-            if (length < 10)
-                throw new ArgumentException(LocalizedStrings.Resources.ShortComment);
+            if (content.Length < 10)
+            {
+                if (encoding.GetByteCount(content) < 10)
+                    throw new ArgumentException(LocalizedStrings.Resources.ShortComment);
+            }
             return AsyncInfo.Run(async token =>
             {
                 IEnumerable<KeyValuePair<string, string>> getData()

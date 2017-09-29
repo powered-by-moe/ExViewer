@@ -24,6 +24,7 @@ using ExClient.Tagging;
 using ExClient.Galleries;
 using ExClient.Galleries.Metadata;
 using Windows.Storage.AccessCache;
+using ExViewer.Helpers;
 
 namespace ExViewer.ViewModels
 {
@@ -117,6 +118,9 @@ namespace ExViewer.ViewModels
                         data.Properties.Description = gallery.GetSecondaryTitle();
                         if (image == null)
                         {
+                            data.Properties.ContentSourceWebLink = gallery.GalleryUri;
+                            data.SetWebLink(gallery.GalleryUri);
+                            data.SetText(gallery.GalleryUri.ToString());
                             if (gallery.Thumb != null)
                             {
                                 var ms = new InMemoryRandomAccessStream();
@@ -130,23 +134,31 @@ namespace ExViewer.ViewModels
                                 else
                                     data.SetBitmap(RandomAccessStreamReference.CreateFromStream(ms));
                             }
-                            data.Properties.ContentSourceWebLink = gallery.GalleryUri;
-                            data.SetWebLink(gallery.GalleryUri);
-                            data.SetText(gallery.GalleryUri.ToString());
+                            if (gallery is SavedGallery)
+                                while (gallery.HasMoreItems)
+                                    await gallery.LoadMoreItemsAsync(20);
+                            var imageFiles = gallery
+                                .Where(i => i.ImageFile != null)
+                                .Select(i => new { i.ImageFile, Name = $"{i.PageID}{i.ImageFile.FileType}" })
+                                .Where(f => f.ImageFile != null)
+                                .ToList();
+                            if (imageFiles.Count == 0)
+                                return;
+                            data.SetFolderProvider(imageFiles.Select(f => f.ImageFile), imageFiles.Select(f => f.Name), gallery.GetDisplayTitle());
                         }
                         else
                         {
-                            data.RequestedOperation = DataPackageOperation.Copy;
-                            if (image.ImageFile != null)
-                            {
-                                var view = RandomAccessStreamReference.CreateFromFile(image.ImageFile);
-                                data.SetBitmap(view);
-                                data.Properties.Thumbnail = image.ImageFile;
-                                data.SetStorageItems(Enumerable.Repeat(image.ImageFile, 1), true);
-                            }
                             data.Properties.ContentSourceWebLink = image.PageUri;
                             data.SetWebLink(image.PageUri);
                             data.SetText(image.PageUri.ToString());
+                            var imageFile = image.ImageFile;
+                            if (imageFile == null)
+                                return;
+                            var view = RandomAccessStreamReference.CreateFromFile(imageFile);
+                            data.SetBitmap(view);
+                            data.Properties.Thumbnail = RandomAccessStreamReference.CreateFromStream(await imageFile.GetThumbnailAsync(Windows.Storage.FileProperties.ThumbnailMode.SingleItem));
+                            var fileName = $"{image.PageID}{imageFile.FileType}";
+                            data.SetFileProvider(imageFile, fileName);
                         }
                     }
                     finally
@@ -330,7 +342,7 @@ namespace ExViewer.ViewModels
                 var prop = await current.ImageFile.GetBasicPropertiesAsync();
                 var imageProp = await current.ImageFile.Properties.GetImagePropertiesAsync();
                 this.CurrentInfo = string.Format(Strings.Resources.Views.ImagePage.ImageFileInfo, current.ImageFile.DisplayType,
-                    Opportunity.Converters.ByteSizeToStringConverter.ByteSizeToString((long)prop.Size, Opportunity.Converters.UnitPrefix.Binary),
+                    Opportunity.Converters.Typed.ByteSizeToStringConverter.ByteSizeToString((long)prop.Size, Opportunity.Converters.Typed.UnitPrefix.Binary),
                     imageProp.Width.ToString(), imageProp.Height.ToString());
             });
         }

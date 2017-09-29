@@ -68,6 +68,11 @@
       "PullTextBlock/Text": "下拉刷新",
       "ReleaseTextBlock/Text": "释放刷新"
     },
+    "TaggingRecordPresenter": {
+      "BlockedAndSlavedIndicator": "B S",
+      "BlockedIndicator": "B",
+      "SlavedIndicator": "S"
+    },
     "TagPresenter": {
       "AddNewTagsAutoSuggestBox/PlaceholderText": "输入新标签，逗号分隔",
       "AddNewTagsButton/Content": "添加新标签",
@@ -229,6 +234,28 @@
       "SearchAppBarButton/Label": "显示所有包含此文件的画廊",
       "ShareAppBarButton/Label": "共享"
     },
+    "InfoPage": {
+      "ChangeUserAppBarButton/Label": "更换用户",
+      "ImageLimitsHeaderTextBlock/Text": "流量限制",
+      "ImageLimitsSeparatorTextBlock/Text": "/",
+      "MoreButton/Content": "更多信息…",
+      "NoTaggingHistoryTextBlock/Text": "最近一段时间内没有记录",
+      "NoToplistsTextBlock/Text": "你现在不在排行榜上",
+      "OpenGalleryMenuFlyoutItem/Text": "打开画廊",
+      "OverviewPivotItem/Header": "总览",
+      "RefreshAppBarButton/Label": "刷新",
+      "RegenerateFormatString": "-{0}/分钟",
+      "SearchTagMenuFlyoutItem/Text": "搜索含有此标签的画廊",
+      "TaggingCountFormatString": "{0} 个标签",
+      "TaggingHistoryHeaderTextBlock/Text": "历史",
+      "TaggingPercentFormatString": "{0:P}",
+      "TaggingPivotItem/Header": "标签",
+      "TaggingStartedHeaderTextBlock/Text": "发起准确度",
+      "TaggingStaticsHeaderTextBlock/Text": "统计",
+      "TaggingVotedHeaderTextBlock/Text": "投票准确度",
+      "ToplistItemRankFormatString": "#{0}",
+      "ToplistsHeaderTextBlock/Text": "排行榜"
+    },
     "LogOnDialog": {
       "ContentDialog/PrimaryButtonText": "确定",
       "NoPassword": "请输入密码。",
@@ -247,7 +274,6 @@
     "RootControl": {
       "CachedSplitViewTab/Content": "缓存的画廊",
       "CachedSplitViewTab/ToolTipService/ToolTip": "缓存的画廊",
-      "ChangeUserButton/ToolTipService/ToolTip": "更换用户",
       "DisableInfoTextBlock/Text": "少女祈祷中…",
       "FavoritesSplitViewTab/Content": "收藏",
       "FavoritesSplitViewTab/ToolTipService/ToolTip": "收藏",
@@ -258,7 +284,8 @@
       "SearchSplitViewTab/Content": "搜索",
       "SearchSplitViewTab/ToolTipService/ToolTip": "搜索",
       "SettingsSplitViewTab/Content": "设置",
-      "SettingsSplitViewTab/ToolTipService/ToolTip": "设置"
+      "SettingsSplitViewTab/ToolTipService/ToolTip": "设置",
+      "UserInfoButton/ToolTipService/ToolTip": "用户信息"
     },
     "SavedPage": {
       "DeleteAllAppBarButton/Label": "删除全部",
@@ -286,6 +313,7 @@
       "SearchExpungedTextBlock/Text": "• 显示已失效的画廊",
       "SearchSimilarTextBlock/Text": "• 搜索相似内容",
       "ShowExpungedCheckBox/Content": "搜索已失效的画廊",
+      "SkipMasterTagsCheckBox/Content": "忽略主标签",
       "TagsCheckBox/Content": "搜索画廊标签",
       "TorrentNamesCheckBox/Content": "搜索种子文件名"
     },

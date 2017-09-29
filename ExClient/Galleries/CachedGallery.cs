@@ -1,6 +1,6 @@
 ﻿using ExClient.Models;
 using Microsoft.EntityFrameworkCore;
-using Opportunity.MvvmUniverse.AsyncHelpers;
+using Opportunity.Helpers.Universal.AsyncHelpers;
 using Opportunity.MvvmUniverse.Collections;
 using System;
 using System.Collections.Generic;
@@ -175,11 +175,7 @@ namespace ExClient.Galleries
         {
             return Run<SaveGalleryProgress>(async (token, progress) =>
             {
-                var toReport = new SaveGalleryProgress
-                {
-                    ImageCount = this.RecordCount,
-                    ImageLoadedInternal = -1
-                };
+                var toReport = new SaveGalleryProgress(-1, this.RecordCount);
                 progress.Report(toReport);
                 while (this.HasMoreItems)
                 {

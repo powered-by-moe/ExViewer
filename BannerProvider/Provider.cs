@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Storage;
@@ -13,7 +15,9 @@ namespace BannerProvider
         private static StorageFolder bannerFolder;
         private const string LAST_UPDATE = "BannerProvider.LastUpdate";
 
-        public static Uri DefaultBanner { get; } = new Uri($"ms-appx:///BannerProvider/Images/DefaultBanner.png");
+        public static Uri DefaultBanner { get; } = new Uri($"ms-appx:///BannerProvider/Images/Default.png");
+
+        public static Uri BannerBackground { get; } = new Uri($"ms-appx:///BannerProvider/Images/Background.png");
 
         public static DateTimeOffset LastUpdate
         {
@@ -45,6 +49,21 @@ namespace BannerProvider
                     return null;
                 }
                 return (StorageFile)files[new Random().Next(0, files.Count)];
+            });
+        }
+
+        public static IAsyncOperation<IList<StorageFile>> GetBannersAsync()
+        {
+            return Run<IList<StorageFile>>(async token =>
+            {
+                await init();
+                var files = await bannerFolder.GetItemsAsync();
+                if (files.Count == 0)
+                {
+                    LastUpdate = DateTimeOffset.MinValue;
+                    return null;
+                }
+                return files.Cast<StorageFile>().ToList();
             });
         }
 

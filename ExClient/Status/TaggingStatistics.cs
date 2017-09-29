@@ -16,11 +16,11 @@ namespace ExClient.Status
     {
         internal TaggingStatistics() { }
 
-        public int Count { get; set; }
-        public double StartedAccuracy { get; set; }
-        public int StartedCount { get; set; }
-        public double VotedAccuracy { get; set; }
-        public int VotedCount { get; set; }
+        public int Count { get; set; } = 0;
+        public double StartedAccuracy { get; set; } = double.NaN;
+        public int StartedCount { get; set; } = 0;
+        public double VotedAccuracy { get; set; } = double.NaN;
+        public int VotedCount { get; set; } = 0;
 
         private readonly ObservableList<TaggingRecord> records = new ObservableList<TaggingRecord>();
         public ObservableListView<TaggingRecord> Records => this.records.AsReadOnly();
@@ -29,7 +29,7 @@ namespace ExClient.Status
 
         public IAsyncAction RefreshAsync()
         {
-            return AsyncInfo.Run(async token =>
+            return AsyncInfo.Run(async token => await Task.Run(async () =>
             {
                 var uid = Client.Current.UserID;
                 if (uid < 0)
@@ -55,7 +55,7 @@ namespace ExClient.Status
                     this.records.AddRange(table.Elements("tr").Skip(1).Select(t => new TaggingRecord(t)));
                 }
                 OnPropertyChanged(default(string));
-            });
+            }, token));
         }
 
         private static double parsePercetage(string str)

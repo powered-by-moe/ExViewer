@@ -26,6 +26,10 @@ namespace ExViewer.Views
         public SplashControl(SplashScreen splashScreen)
         {
             InitializeComponent();
+            if (DeviceTrigger.IsMobile)
+            {
+                this.gd_Foreground.VerticalAlignment = VerticalAlignment.Stretch;
+            }
             BannerProvider.Provider.GetBannerAsync().Completed = (s, e)
                 => Dispatcher.Begin(() => loadBanner(s.GetResults()));
             loadApplication();
@@ -69,15 +73,27 @@ namespace ExViewer.Views
         private void splash_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (DeviceTrigger.IsMobile)
-                return;
-            var l = this.splashScreen.ImageLocation;
-            this.img_splash.Margin = new Thickness(l.Left, l.Top, l.Left, l.Top);
-            this.img_splash.Width = l.Width;
-            this.img_splash.Height = l.Height;
+            {
+                var s = e.NewSize;
+                if (s.Height >= s.Width)
+                {
+                    this.gd_Foreground.Height = double.NaN;
+                    this.img_pic.Height = s.Width / 620 * 136;
+                }
+                else
+                {
+                    this.gd_Foreground.Height = s.Height / 2.5;
+                    this.img_pic.Height = s.Height / 2.5 / 300 * 136;
+                }
+            }
+            else
+            {
+                var l = this.splashScreen.ImageLocation;
+                this.gd_Foreground.Margin = new Thickness(0, l.Top, 0, 0);
+                this.gd_Foreground.Height = l.Height;
+                this.img_pic.Height = l.Height / 300 * 136;
+            }
 
-            this.img_pic.Margin = new Thickness(l.Left, l.Top, l.Left, l.Top);
-            this.img_pic.Width = l.Width;
-            this.img_pic.Height = l.Height;
         }
 
         private RootControl rootControl;
@@ -188,14 +204,6 @@ namespace ExViewer.Views
         {
             try
             {
-                await Client.Current.UserStatus.RefreshAsync();
-            }
-            catch (Exception)
-            {
-                //Ignore exceptions here.
-            }
-            try
-            {
                 var ver = await VersionChecker.CheckAsync();
                 if (ver is Windows.ApplicationModel.PackageVersion v)
                 {
@@ -207,15 +215,6 @@ namespace ExViewer.Views
             {
                 //Ignore exceptions here.
             }
-            if (DateTimeOffset.Now - BannerProvider.Provider.LastUpdate > new TimeSpan(7, 0, 0, 0))
-                try
-                {
-                    await BannerProvider.Provider.FetchBanners();
-                }
-                catch (Exception)
-                {
-                    //Ignore exceptions here.
-                }
             if (DateTimeOffset.Now - EhTagClient.Client.LastUpdate > new TimeSpan(7, 0, 0, 0))
                 try
                 {
@@ -238,6 +237,23 @@ namespace ExViewer.Views
             {
                 RootControl.RootController.SendToast(Strings.Resources.Database.EhTagTranslatorClient.Update.Failed, null);
             }
+            if (DateTimeOffset.Now - BannerProvider.Provider.LastUpdate > new TimeSpan(7, 0, 0, 0))
+                try
+                {
+                    await BannerProvider.Provider.FetchBanners();
+                }
+                catch (Exception)
+                {
+                    //Ignore exceptions here.
+                }
+            try
+            {
+                await ExClient.HentaiVerse.HentaiVerseInfo.FetchAsync();
+            }
+            catch (Exception)
+            {
+                //Ignore exceptions here.
+            }
         }
 
         private async Task verify()
@@ -247,28 +263,28 @@ namespace ExViewer.Views
             var result = await UserConsentVerifier.RequestVerificationAsync(Strings.Resources.Verify.Dialog.Content);
             switch (result)
             {
-            case UserConsentVerificationResult.Verified:
-                succeed = true;
-                break;
-            case UserConsentVerificationResult.DeviceNotPresent:
-            case UserConsentVerificationResult.NotConfiguredForUser:
-                info = Strings.Resources.Verify.NotConfigured;
-                break;
-            case UserConsentVerificationResult.DisabledByPolicy:
-                info = Strings.Resources.Verify.Disabled;
-                break;
-            case UserConsentVerificationResult.DeviceBusy:
-                info = Strings.Resources.Verify.DeviceBusy;
-                break;
-            case UserConsentVerificationResult.RetriesExhausted:
-                info = Strings.Resources.Verify.RetriesExhausted;
-                break;
-            case UserConsentVerificationResult.Canceled:
-                info = Strings.Resources.Verify.Canceled;
-                break;
-            default:
-                info = Strings.Resources.Verify.OtherFailure;
-                break;
+                case UserConsentVerificationResult.Verified:
+                    succeed = true;
+                    break;
+                case UserConsentVerificationResult.DeviceNotPresent:
+                case UserConsentVerificationResult.NotConfiguredForUser:
+                    info = Strings.Resources.Verify.NotConfigured;
+                    break;
+                case UserConsentVerificationResult.DisabledByPolicy:
+                    info = Strings.Resources.Verify.Disabled;
+                    break;
+                case UserConsentVerificationResult.DeviceBusy:
+                    info = Strings.Resources.Verify.DeviceBusy;
+                    break;
+                case UserConsentVerificationResult.RetriesExhausted:
+                    info = Strings.Resources.Verify.RetriesExhausted;
+                    break;
+                case UserConsentVerificationResult.Canceled:
+                    info = Strings.Resources.Verify.Canceled;
+                    break;
+                default:
+                    info = Strings.Resources.Verify.OtherFailure;
+                    break;
             }
             if (!succeed)
             {

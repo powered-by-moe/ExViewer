@@ -131,10 +131,12 @@
     <Compile Include="Controls\MyPage.cs" />
     <Compile Include="Controls\PullToRefreshIndicator.cs" />
     <Compile Include="Controls\TagAutoSuggestBox\TagSuggestionService.cs" />
+    <Compile Include="Controls\TaggingRecordPresenter.xaml.cs">
+      <DependentUpon>TaggingRecordPresenter.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TagPresenter.xaml.cs">
       <DependentUpon>TagPresenter.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\WrapPanel.cs" />
     <Compile Include="Helpers\AccountManager.cs" />
     <Compile Include="Converters\FormatStringConverter.cs" />
     <Compile Include="Helpers\ApiInfo.cs" />
@@ -186,6 +188,7 @@
     <Compile Include="ViewModels\FavoritesVM.cs" />
     <Compile Include="ViewModels\GalleryListVM{T}.cs" />
     <Compile Include="Controls\TagAutoSuggestBox\ITagRecord.cs" />
+    <Compile Include="ViewModels\InfoVM.cs" />
     <Compile Include="ViewModels\PopularVM.cs" />
     <Compile Include="ViewModels\SavedVM.cs" />
     <Compile Include="ViewModels\GalleryVM.cs" />
@@ -259,6 +262,9 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\SplashScreen.scale-100.png" />
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\SplashScreen.scale-400.png" />
     <Content Include="Images\CopyToClipboard.scale-100.png" />
     <Content Include="Images\CopyToClipboard.scale-200.png" />
     <Content Include="Images\CopyToClipboard.scale-400.png" />
@@ -271,7 +277,6 @@
     <Content Include="Images\Light\ImageLoading.scale-100.png" />
     <Content Include="Images\Light\ImageLoading.scale-200.png" />
     <Content Include="Images\Light\ImageLoading.scale-400.png" />
-    <Content Include="Assets\SplashScreen.scale-100.png" />
     <Content Include="Images\Dark\ImageLoading.scale-100.png" />
     <Content Include="Images\Dark\ImageLoading.scale-200.png" />
     <Content Include="Images\Dark\ImageLoading.scale-400.png" />
@@ -287,7 +292,6 @@
     <Content Include="Assets\Small.scale-100.png" />
     <Content Include="Assets\Small.scale-200.png" />
     <Content Include="Assets\Small.scale-400.png" />
-    <Content Include="Assets\SplashScreen.scale-400.png" />
     <Content Include="Assets\Store.scale-100.png" />
     <Content Include="Assets\Store.scale-200.png" />
     <Content Include="Assets\Store.scale-400.png" />
@@ -314,7 +318,6 @@
     <Content Include="Images\MicrosoftEdge.scale-400.png" />
     <Content Include="Images\MicrosoftEdge.scale-100.png" />
     <Content Include="Properties\Default.rd.xml" />
-    <Content Include="Assets\SplashScreen.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -351,6 +354,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ImagePresenter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TaggingRecordPresenter.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
